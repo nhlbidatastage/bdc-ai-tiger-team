@@ -18,3 +18,5 @@ The goal for objective 1.1 is to see if we can replicate a simple AI-based analy
 **Where**: Terra/Velsera workspace environments running in Jupyter
 
 **Why**: This will demonstrate if 1) our workspace environments can be used to perform the full breadth of work described in the fine-tuning tutorial above and 2) a researcher can use a similar approach to explore BDC data to answer their hypothesis generation questions.  An outcome will be a tutorial on how this was done in BDC and the required resources used (or, if not feasible, why not).
+
+For more details see the Objective 1.1 [README.md](objective_1.1/README.md)
