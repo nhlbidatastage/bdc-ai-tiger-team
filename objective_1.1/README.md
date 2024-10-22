@@ -17,17 +17,17 @@ installed properly. See the [notes](https://docs.google.com/document/d/1S1aVbmvZ
 Basic “hello world” for [Llama 3](https://huggingface.co/meta-llama/Llama-3.1-8B-Instruct) in Terra notebooks.
 
 Alisa Manning has created a couple notebooks to explore Llama3 in Terra notebooks:
-* [Running_Llama_on_HF_transformers.ipynb](Running_Llama_on_HF_transformers.ipynb)
+* [Running_Llama_on_HF_transformers.ipynb](Running_Llama_on_HF_transformers.ipynb) 
 * ['llama test.ipynb'](llama%20test.ipynb)
 
-These are not yet working
+_These are not yet working, use the notebook below from Brian for a working version_
 
 Brian tried a different base image and GPU type and was able to get a basic "hello world" working (prompt for Llama3 to create a recipe).
 
 The environment was:
 <img width="522" alt="image" src="https://github.com/user-attachments/assets/88fa4db3-7d28-4f3c-9ded-ee297610f35f">
 
-I was then able to succesffully run this notebook:
+He was then able to succesffully run this notebook:
 * ['20241021 Llama3.ipynb'](20241021%20Llama3.ipynb)
 
 Some things to consider:
