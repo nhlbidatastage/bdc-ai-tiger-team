@@ -18,7 +18,7 @@ Basic “hello world” for [Llama 3](https://huggingface.co/meta-llama/Llama-3.
 
 Alisa Manning has created a couple notebooks to explore Llama3 in Terra notebooks:
 * [Running_Llama_on_HF_transformers.ipynb](Running_Llama_on_HF_transformers.ipynb)
-* ['llama test.ipynb'](llama test.ipynb)
+* ['llama test.ipynb']('llama test.ipynb')
 
 These are not yet working
 
@@ -28,7 +28,7 @@ The environment was:
 <img width="522" alt="image" src="https://github.com/user-attachments/assets/88fa4db3-7d28-4f3c-9ded-ee297610f35f">
 
 I was then able to succesffully run this notebook:
-* [20241021 Llama3.ipynb]('20241021 Llama3.ipynb')
+* ['20241021 Llama3.ipynb']('20241021 Llama3.ipynb')
 
 Some things to consider:
 * I needed to use the NVIDIA Tesla V100 GPU (I tried 2, not sure if 2 are required)
