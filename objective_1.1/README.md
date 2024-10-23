@@ -48,6 +48,12 @@ Once we have a working hello world above we're going to:
 
 More to come on this.
 
+### Dockerfile
+
+Build from the `objective_1.1` directory (you can drop `--no-cache`):
+
+  docker build --no-cache -t aitt-obj-1-1 -f docker/Dockerfile .
+
 ## Experiment 4
 
 Tuning of the model based on “Discovery page” content in BDC.  We’ll use this [tutorial](https://www.datacamp.com/tutorial/llama3-fine-tuning-locally) as a jumping off point.  More to come on this.
