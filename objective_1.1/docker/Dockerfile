@@ -1,5 +1,6 @@
 # Use a base image with CUDA support and PyTorch preinstalled
-FROM nvidia/cuda:11.8.0-cudnn8-runtime-ubuntu20.04
+#FROM nvidia/cuda:11.8.0-cudnn8-runtime-ubuntu20.04
+FROM us-docker.pkg.dev/deeplearning-platform-release/gcr.io/pytorch-cu121.2-2.py310
 
 # Set environment variables for Python and CUDA
 ENV LANG=C.UTF-8 \
@@ -23,7 +24,8 @@ RUN apt-get update && apt-get install -y \
 RUN pip3 install --upgrade pip
 
 # Install PyTorch with CUDA and transformers library
-RUN pip3 install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu118
+RUN pip3 install torch torchvision torchaudio 
+# --index-url https://download.pytorch.org/whl/cu118
 RUN pip3 install transformers
 
 # Set the working directory

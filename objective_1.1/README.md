@@ -46,13 +46,29 @@ Once we have a working hello world above we're going to:
 * write the same workflow as the notebook but in both CWL and WDL
 * show we can run these in their respective environments 
 
-More to come on this.
+```bash
+docker build --no-cache -t aitt-obj-1-1 -f docker/Dockerfile . 
+```
+
 
 ### Dockerfile
 
 Build from the `objective_1.1` directory (you can drop `--no-cache`):
 
   docker build --no-cache -t aitt-obj-1-1 -f docker/Dockerfile .
+
+### Script
+
+I created a Python script to do the heavy lifting on behind the CWL/WDL workflows.
+
+  scripts/run_model.py
+
+You would run this script with:
+
+  python3 generate_text.py --hf_token your_hf_token --prompt "I have tomatoes, basil and cheese at home. What can I cook for dinner?" --output_file output.tsv
+
+
+### CWL/WDL
 
 ## Experiment 4
 
