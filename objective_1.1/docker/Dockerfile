@@ -1,38 +1,37 @@
-# Use a base image with CUDA support and PyTorch preinstalled
-#FROM nvidia/cuda:11.8.0-cudnn8-runtime-ubuntu20.04
-FROM us-docker.pkg.dev/deeplearning-platform-release/gcr.io/pytorch-cu121.2-2.py310
+FROM nvidia/cuda:12.1.0-cudnn8-devel-ubuntu22.04
+LABEL maintainer="Hugging Face"
 
-# Set environment variables for Python and CUDA
-ENV LANG=C.UTF-8 \
-    LC_ALL=C.UTF-8 \
-    PYTHONDONTWRITEBYTECODE=1 \
-    PYTHONUNBUFFERED=1 \
-    NVIDIA_VISIBLE_DEVICES=all \
-    NVIDIA_DRIVER_CAPABILITIES=compute,utility \
-    CUDA_DEVICE_ORDER=PCI_BUS_ID
+ARG DEBIAN_FRONTEND=noninteractive
 
-# Install essential packages
-RUN apt-get update && apt-get install -y \
-    python3-pip \
-    python3-dev \
-    git \
-    curl \
-    && apt-get clean \
-    && rm -rf /var/lib/apt/lists/*
+RUN apt update
+# RUN apt install -y git libsndfile1-dev tesseract-ocr espeak-ng python3 python3-pip ffmpeg
+RUN apt install -y git python3 python3-pip
+RUN python3 -m pip install --no-cache-dir --upgrade pip
 
-# Install Python packages
-RUN pip3 install --upgrade pip
+ARG REF=main
+RUN git clone https://github.com/huggingface/transformers && cd transformers && git checkout $REF
 
-# Install PyTorch with CUDA and transformers library
-RUN pip3 install torch torchvision torchaudio 
-# --index-url https://download.pytorch.org/whl/cu118
-RUN pip3 install transformers
+# If set to nothing, will install the latest version
+ARG PYTORCH='2.5.1'
+ARG TORCH_VISION=''
+ARG TORCH_AUDIO=''
+# Example: `cu102`, `cu113`, etc.
+ARG CUDA='cu121'
 
-# Set the working directory
-WORKDIR /app
+RUN [ ${#PYTORCH} -gt 0 ] && VERSION='torch=='$PYTORCH'.*' ||  VERSION='torch'; python3 -m pip install --no-cache-dir -U $VERSION --extra-index-url https://download.pytorch.org/whl/$CUDA
+RUN [ ${#TORCH_VISION} -gt 0 ] && VERSION='torchvision=='TORCH_VISION'.*' ||  VERSION='torchvision'; python3 -m pip install --no-cache-dir -U $VERSION --extra-index-url https://download.pytorch.org/whl/$CUDA
+RUN [ ${#TORCH_AUDIO} -gt 0 ] && VERSION='torchaudio=='TORCH_AUDIO'.*' ||  VERSION='torchaudio'; python3 -m pip install --no-cache-dir -U $VERSION --extra-index-url https://download.pytorch.org/whl/$CUDA
 
-# Copy your script into the container
-COPY scripts/run_model.py /app/
+RUN python3 -m pip install --no-cache-dir -e ./transformers #[dev-torch,testing,video]
 
-# Ensure the container runs the Python script on startup
-CMD ["python3", "run_model.py"]
+# not sure why tensorflow is being removed here, removed all calls to it from the script
+RUN python3 -m pip uninstall -y tensorflow flax
+
+# RUN python3 -m pip install --no-cache-dir git+https://github.com/facebookresearch/detectron2.git pytesseract
+RUN python3 -m pip install -U "itsdangerous<2.1.0"
+
+# When installing in editable mode, `transformers` is not recognized as a package.
+# this line must be added in order for python to be aware of transformers.
+RUN cd transformers && python3 setup.py develop
+
+COPY scripts/run_model.py /
