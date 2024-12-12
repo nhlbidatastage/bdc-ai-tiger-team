@@ -132,98 +132,16 @@ You can add `--no-cache` if you like to make sure the build is totally fresh.
 
 See the CWL in `huggingface-llama-cwl/huggingface_test-tool-0.2.cwl`.  This has been reported to work on SBG.
 
+Using V100 and testing A10G.  The latter is the G5 series on AWS.
+
 ### WDL
 
 See the WDL in `huggingface-llama-wdl/aitt_obj_1_1.wdl`, this isn't working yet.
 
+See https://cloud.google.com/compute/docs/gpus for information about the Google instance types.
 
-LEFT OFF WITH: the job failed, looks like CUDA is setup correctly and the model is downloading.  However I think there may not be enough system memory?  I bumped it to 64GB to be safe.  Details of the V100 instance types here: https://cloud.google.com/compute/docs/gpus
 
-```
-2024/12/11 08:50:49 Starting container setup.
-2024/12/11 08:50:51 Done container setup.
-2024/12/11 08:50:55 Starting localization.
-2024/12/11 08:51:13 Localization script execution started...
-2024/12/11 08:51:13 Localizing input gs://fc-8fc8bb19-39e2-4911-9d56-1643a820d931/submissions/ed03b643-f879-4e82-8b3e-d4778705dda0/HelloWorldWithDocker/97de4541-d093-4f76-af07-079cbe35afcb/call-run_python_script/script -> /cromwell_root/script
-2024/12/11 08:51:18 Localization script execution complete.
-2024/12/11 08:51:22 Done localization.
-2024/12/11 08:51:22 Running user action: docker run -v /mnt/local-disk:/cromwell_root --entrypoint=/bin/bash nimbusinformatics/bdc-ai-tiger-team@sha256:4130a23af3e8234d369e1143518b8bf106bf5e83fe7551177141b03f0598fb17 /cromwell_root/script
-CUDA Available:  True
-CUDA Version:  12.1
-Current Device:  0
-Device Name:  Tesla V100-SXM2-16GB
-Number of GPUs:  1
-MPS Available:  False
-|===========================================================================|
-|                  PyTorch CUDA memory summary, device ID 0                 |
-|---------------------------------------------------------------------------|
-|            CUDA OOMs: 0            |        cudaMalloc retries: 0         |
-|===========================================================================|
-|        Metric         | Cur Usage  | Peak Usage | Tot Alloc  | Tot Freed  |
-|---------------------------------------------------------------------------|
-| Allocated memory      |      0 B   |      0 B   |      0 B   |      0 B   |
-|       from large pool |      0 B   |      0 B   |      0 B   |      0 B   |
-|       from small pool |      0 B   |      0 B   |      0 B   |      0 B   |
-|---------------------------------------------------------------------------|
-| Active memory         |      0 B   |      0 B   |      0 B   |      0 B   |
-|       from large pool |      0 B   |      0 B   |      0 B   |      0 B   |
-|       from small pool |      0 B   |      0 B   |      0 B   |      0 B   |
-|---------------------------------------------------------------------------|
-| Requested memory      |      0 B   |      0 B   |      0 B   |      0 B   |
-|       from large pool |      0 B   |      0 B   |      0 B   |      0 B   |
-|       from small pool |      0 B   |      0 B   |      0 B   |      0 B   |
-|---------------------------------------------------------------------------|
-| GPU reserved memory   |      0 B   |      0 B   |      0 B   |      0 B   |
-|       from large pool |      0 B   |      0 B   |      0 B   |      0 B   |
-|       from small pool |      0 B   |      0 B   |      0 B   |      0 B   |
-|---------------------------------------------------------------------------|
-| Non-releasable memory |      0 B   |      0 B   |      0 B   |      0 B   |
-|       from large pool |      0 B   |      0 B   |      0 B   |      0 B   |
-|       from small pool |      0 B   |      0 B   |      0 B   |      0 B   |
-|---------------------------------------------------------------------------|
-| Allocations           |       0    |       0    |       0    |       0    |
-|       from large pool |       0    |       0    |       0    |       0    |
-|       from small pool |       0    |       0    |       0    |       0    |
-|---------------------------------------------------------------------------|
-| Active allocs         |       0    |       0    |       0    |       0    |
-|       from large pool |       0    |       0    |       0    |       0    |
-|       from small pool |       0    |       0    |       0    |       0    |
-|---------------------------------------------------------------------------|
-| GPU reserved segments |       0    |       0    |       0    |       0    |
-|       from large pool |       0    |       0    |       0    |       0    |
-|       from small pool |       0    |       0    |       0    |       0    |
-|---------------------------------------------------------------------------|
-| Non-releasable allocs |       0    |       0    |       0    |       0    |
-|       from large pool |       0    |       0    |       0    |       0    |
-|       from small pool |       0    |       0    |       0    |       0    |
-|---------------------------------------------------------------------------|
-| Oversize allocations  |       0    |       0    |       0    |       0    |
-|---------------------------------------------------------------------------|
-| Oversize GPU segments |       0    |       0    |       0    |       0    |
-|===========================================================================|
-
-Using device: cuda
-
-Downloading shards:   0%|          | 0/4 [00:00<?, ?it/s]
-Downloading shards:  25%|██▌       | 1/4 [03:07<09:13, 184.41s/it]
-Downloading shards:  50%|█████     | 2/4 [09:49<10:28, 314.02s/it]
-Downloading shards:  75%|███████▌  | 3/4 [16:33<05:55, 355.18s/it]
-Downloading shards: 100%|██████████| 4/4 [18:02<00:00, 250.26s/it]
-Downloading shards: 100%|██████████| 4/4 [18:02<00:00, 270.68s/it]
-
-Loading checkpoint shards:   0%|          | 0/4 [00:00<?, ?it/s]
-Loading checkpoint shards:  25%|██▌       | 1/4 [10:49<32:28, 649.56s/it]
-Loading checkpoint shards:  50%|█████     | 2/4 [21:51<21:52, 656.40s/it]
-Loading checkpoint shards:  75%|███████▌  | 3/4 [32:03<10:36, 636.22s/it]/cromwell_root/script: line 27:    15 Killed                  python3 /run_model.py --hf_token <TOKEN> --prompt 'I have tomatoes, basil and cheese at home. What can I cook for dinner?' --output_file llama_output.txt --model meta-llama/Meta-Llama-3.1-8B
-2024/12/11 09:55:13 Starting delocalization.
-2024/12/11 09:55:16 Delocalization script execution started...
-2024/12/11 09:55:16 Delocalizing output /cromwell_root/memory_retry_rc -> gs://fc-8fc8bb19-39e2-4911-9d56-1643a820d931/submissions/ed03b643-f879-4e82-8b3e-d4778705dda0/HelloWorldWithDocker/97de4541-d093-4f76-af07-079cbe35afcb/call-run_python_script/memory_retry_rc
-2024/12/11 09:55:25 Delocalizing output /cromwell_root/rc -> gs://fc-8fc8bb19-39e2-4911-9d56-1643a820d931/submissions/ed03b643-f879-4e82-8b3e-d4778705dda0/HelloWorldWithDocker/97de4541-d093-4f76-af07-079cbe35afcb/call-run_python_script/rc
-2024/12/11 09:55:26 Delocalizing output /cromwell_root/stdout -> gs://fc-8fc8bb19-39e2-4911-9d56-1643a820d931/submissions/ed03b643-f879-4e82-8b3e-d4778705dda0/HelloWorldWithDocker/97de4541-d093-4f76-af07-079cbe35afcb/call-run_python_script/stdout
-2024/12/11 09:55:28 Delocalizing output /cromwell_root/stderr -> gs://fc-8fc8bb19-39e2-4911-9d56-1643a820d931/submissions/ed03b643-f879-4e82-8b3e-d4778705dda0/HelloWorldWithDocker/97de4541-d093-4f76-af07-079cbe35afcb/call-run_python_script/stderr
-2024/12/11 09:55:29 Delocalizing output /cromwell_root/llama_output.txt -> gs://fc-8fc8bb19-39e2-4911-9d56-1643a820d931/submissions/ed03b643-f879-4e82-8b3e-d4778705dda0/HelloWorldWithDocker/97de4541-d093-4f76-af07-079cbe35afcb/call-run_python_script/llama_output.txt
-Required file output '/cromwell_root/llama_output.txt' does not exist.
-```
+LEFT OFF WITH: the job ran but the output was a single line file with just the prompt.  Retrying with 2 GPUs to see if that makes a difference and it doesn't (I get multiple duplicate lines of the prompt).  I may need to investigate https://pytorch.org/docs/stable/fsdp.html if the output is failing due to insufficient GPU memory and it's only using 1 GPUs memory (as I suspect).  Trying a2-highgpu-1g (which has 40GB of GPU RAM) fails since the instance type isn't supported in Google Pipelines API ("Error: validating pipeline: unsupported accelerator: "a2-highgpu-1g"	")
 
 ### NEXT STEPS
 
