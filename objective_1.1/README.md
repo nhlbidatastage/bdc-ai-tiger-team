@@ -39,7 +39,7 @@ Some things to consider:
 * You need a valid Huggingface token
 * You need to apply for access to the Llama 3 model via their Huggingface page
 
-## Experiment 3 - Docker + Workflow (working on SBG, Terra in progress) <-- we are here...
+## Experiment 3 - Docker + Workflow (working!) 
 
 Once we had a working hello world above we:
 * created a Docker image 
@@ -140,8 +140,7 @@ See the WDL in `huggingface-llama-wdl/aitt_obj_1_1.wdl`
 
 See https://cloud.google.com/compute/docs/gpus for information about the Google instance types.
 
-
-LEFT OFF WITH: the job ran but the output was a single line file with just the prompt.  Retrying with 2 GPUs after refactoring the script to include various params and to use accelerate library to spread across multiple GPUs to see if that makes a difference .  Trying a2-highgpu-1g (which has 40GB of GPU RAM) fails since the instance type isn't supported in Google Pipelines API ("Error: validating pipeline: unsupported accelerator: "a2-highgpu-1g"	"). I asked the Terra team what systems are available.  Using top-k=10 max-length=600 instead of 4000 since that gave me good results locally.
+The job ran and the output wasn't the best I've seen.  This run used a v100 w/ 2 GPUs after refactoring the script to include various params and to use accelerate library to spread across multiple GPUs to see if that makes a difference .  Trying a2-highgpu-1g (which has 40GB of GPU RAM) fails since the instance type isn't supported in Google Pipelines API ("Error: validating pipeline: unsupported accelerator: "a2-highgpu-1g"	"). I asked the Terra team what systems are available.  Using top-k=10 max-length=600 instead of 4000 since that gave me good results locally and this was an OK result on Terra.  We can try running it multiple times and tweak these parameters to see if we can improve the answer.
 
 ### NEXT STEPS
 
