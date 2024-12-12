@@ -1,16 +1,24 @@
 version 1.0
 
-workflow HelloWorldWithDocker {
+workflow HelloHuggingFace {
     input {
         String token
         String prompt
         String model
+        Int top_k
+        Int max_length
+        Int num_return
+        String dtype
     }
     call run_python_script {
         input:
             token = token,
             prompt = prompt,
-            model = model 
+            model = model,
+            top_k = top_k,
+            max_length = max_length,
+            num_return = num_return,
+            dtype = dtype
     }
 
     output {
@@ -24,10 +32,14 @@ task run_python_script {
         String token
         String prompt
         String model
+        Int top_k
+        Int max_length
+        Int num_return
+        String dtype
     }
 
     command {
-        python3 /run_model.py --hf_token ${token} --prompt ${prompt} --output_file llama_output.txt --model ${model}
+        python3 /run_model.py --token ${token} --prompt ${prompt} --output-file llama_output.txt --model ${model} --top-k ${top_k} --max-length ${max_length} --num-return-seq ${num_return} --dtype ${dtype}
     }
 
     output {      
@@ -38,7 +50,7 @@ task run_python_script {
         memory: "64 GB"
         cpu: "8" 
         gpuType: "nvidia-tesla-v100"
-        gpuCount: 1
+        gpuCount: 2
         nvidiaDriverVersion: "418.87.00" # The official hugging face PyTorch gpu uses Nvidia drivers 470-471
         zones: ["us-central1-c"]  
         disks: "local-disk 100 SSD"

@@ -66,7 +66,7 @@ We created a Python script to do the heavy lifting on behind the CWL/WDL workflo
 You would run this script with:
 
 ```bash
-python3 run_model.py --hf_token <your_hf_token> --prompt "I have tomatoes, basil and cheese at home. What can I cook for dinner?" --output_file output.tsv --model meta-llama/Meta-Llama-3.1-8B
+python3 run_model.py --token <your_hf_token> --prompt "I have tomatoes, basil and cheese at home. What can I cook for dinner?" --output-file output.tsv --model meta-llama/Meta-Llama-3.1-8B  --top-k 10 --max-length 600 --num-return-seq 1 --dtype float16
 ```
 
 ### Testing Locally
@@ -83,9 +83,9 @@ conda create -n llama-testing python=3.10 -y
 # activate it
 conda activate llama-testing
 # install python dependencies 
-pip3 install torch torchvision torchaudio; pip3 install transformers; pip3 install tensorflow
+pip3 install torch torchvision torchaudio; pip3 install transformers; pip3 install tensorflow; pip3 install accelerate
 # now run the script, this should automatically use the M2 GPU cores (you can see this in Activity Monitor)
-python scripts/run_model.py --hf_token <your_hf_token> --prompt "I have tomatoes, basil and cheese at home. What can I cook for dinner?" --output_file output.tsv --model meta-llama/Meta-Llama-3.1-8B
+python scripts/run_model.py --token <your_hf_token> --prompt "I have tomatoes, basil and cheese at home. What can I cook for dinner?" --output-file output.tsv --model meta-llama/Meta-Llama-3.1-8B  --top-k 10 --max-length 600 --num-return-seq 1 --dtype float16
 ```
 
 This should run pretty quickly and use the GPU cores on the M-series processor.
@@ -99,7 +99,7 @@ This approach uses Docker, so the GPU acceleration won't be used.  Rather the CP
 # launch into the docker container
 docker run -it bdc-ai-tiger-team /bin/bash
 # within that Docker container, run the python script
-root@68f713819d68:/# python3 run_model.py --hf_token <your_hf_token> --prompt "I have tomatoes, basil and cheese at home. What can I cook for dinner?" --output_file output.tsv --model meta-llama/Meta-Llama-3.1-8B
+root@68f713819d68:/# python3 run_model.py --token <your_hf_token> --prompt "I have tomatoes, basil and cheese at home. What can I cook for dinner?" --output-file output.tsv --model meta-llama/Meta-Llama-3.1-8B  --top-k 10 --max-length 600 --num-return-seq 1 --dtype float16
 ```
 
 This runs more slowly since it's using the CPU instead.  It also re-downloads the model files each time you build and run it.
@@ -136,12 +136,12 @@ Using V100 and testing A10G.  The latter is the G5 series on AWS.
 
 ### WDL
 
-See the WDL in `huggingface-llama-wdl/aitt_obj_1_1.wdl`, this isn't working yet.
+See the WDL in `huggingface-llama-wdl/aitt_obj_1_1.wdl`
 
 See https://cloud.google.com/compute/docs/gpus for information about the Google instance types.
 
 
-LEFT OFF WITH: the job ran but the output was a single line file with just the prompt.  Retrying with 2 GPUs to see if that makes a difference and it doesn't (I get multiple duplicate lines of the prompt).  I may need to investigate https://pytorch.org/docs/stable/fsdp.html if the output is failing due to insufficient GPU memory and it's only using 1 GPUs memory (as I suspect).  Trying a2-highgpu-1g (which has 40GB of GPU RAM) fails since the instance type isn't supported in Google Pipelines API ("Error: validating pipeline: unsupported accelerator: "a2-highgpu-1g"	")
+LEFT OFF WITH: the job ran but the output was a single line file with just the prompt.  Retrying with 2 GPUs after refactoring the script to include various params and to use accelerate library to spread across multiple GPUs to see if that makes a difference .  Trying a2-highgpu-1g (which has 40GB of GPU RAM) fails since the instance type isn't supported in Google Pipelines API ("Error: validating pipeline: unsupported accelerator: "a2-highgpu-1g"	"). I asked the Terra team what systems are available.  Using top-k=10 max-length=600 instead of 4000 since that gave me good results locally.
 
 ### NEXT STEPS
 

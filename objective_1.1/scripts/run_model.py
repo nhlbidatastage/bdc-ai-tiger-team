@@ -1,7 +1,7 @@
 import argparse
 import torch
 import transformers
-from transformers import AutoTokenizer
+from transformers import AutoTokenizer, AutoModelForCausalLM    
 from huggingface_hub import login
 #import tensorflow as tf
 #from tensorflow.python.client import device_lib
@@ -25,13 +25,13 @@ def check_gpu():
     #print("Local Devices: ", device_lib.list_local_devices())
 
 # Function to generate text using the provided model and prompt
-def generate_text(hf_token, model_name, text_prompt):
+def generate_text(hf_token, model_name, text_prompt, top_k, max_length, num_return_seq, low_cpu_mem, dtype):
+
     # Login to Hugging Face
     login(hf_token)
 
-    # Load the model and tokenizer
-    #model_name = "meta-llama/Meta-Llama-3.1-8B"
-    #device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+    # Load the model and tokenizer, mps is Apple M-series, CUDA is Nvidia GPU, CPU is fallback
+    # Switched to using accelerate which I think actually takes care of the device via the device_map=auto parameter
     if torch.backends.mps.is_available():
         device = torch.device("mps")
         print(torch.mps.empty_cache())
@@ -39,18 +39,38 @@ def generate_text(hf_token, model_name, text_prompt):
     elif torch.cuda.is_available():
         device = torch.device("cuda")
         torch.cuda.empty_cache()  # Clear the GPU cache
+        torch.cuda.synchronize()
         print(torch.cuda.memory_summary())
     else:
         device = torch.device("cpu")
 
     print(f"Using device: {device}")
 
+    # check for the dtype, controls the precision of the model
+    dtypeObj = torch.float16
+    if (dtype == "bfloat16"):
+        dtypeObj = torch.bfloat16
+    elif (dtype == "float32"):
+        dtypeObj = torch.float32
+    elif (dtype == "float64"):
+        dtypeObj = torch.float64
+
+    # Load model and tokenizer with device_map=auto, Automatically splits the model across multiple devices (e.g., multiple GPUs or GPU + CPU) based on their available memory.
+    model = AutoModelForCausalLM.from_pretrained(
+        model_name,
+        device_map="auto", 
+        torch_dtype=dtypeObj
+    )
+
+    # Load the tokenizer
+    tokenizer = AutoTokenizer.from_pretrained(model_name)
+
     # Initialize the text generation pipeline
     pipeline = transformers.pipeline(
         "text-generation", 
-        model=model_name, 
-        model_kwargs={"torch_dtype": torch.float16}, 
-        device=device
+        model=model,
+        tokenizer=tokenizer,
+        model_kwargs={"torch_dtype": dtypeObj, "low_cpu_mem_usage": low_cpu_mem}
     )
 
     if torch.backends.mps.is_available():
@@ -58,18 +78,15 @@ def generate_text(hf_token, model_name, text_prompt):
     elif torch.cuda.is_available():
         print(torch.cuda.memory_summary())
 
-    # Load the tokenizer
-    tokenizer = AutoTokenizer.from_pretrained(model_name)
-
     # Generate text based on the input prompt
     sequences = pipeline(
         text_prompt,
         do_sample=True,
-        top_k=10,
-        num_return_sequences=1,
+        top_k=top_k,
+        num_return_sequences=num_return_seq,
         eos_token_id=tokenizer.eos_token_id,
         truncation=True,
-        max_length=4000,
+        max_length=max_length
     )
 
     # Return an array of generated texts
@@ -84,11 +101,16 @@ def write_to_tsv(filename, results):
 
 # Main function to handle arguments
 def main():
-    parser = argparse.ArgumentParser(description="Generate text using the Meta-Llama model.")
-    parser.add_argument('--hf_token', type=str, required=True, help="Hugging Face API token")
+    parser = argparse.ArgumentParser(description="Generate text using the Meta-Llama model")
+    parser.add_argument('--token', type=str, required=True, help="Hugging Face API token")
     parser.add_argument('--prompt', type=str, required=True, help="Text prompt to feed to the model")
-    parser.add_argument('--output_file', type=str, required=True, help="Output TSV file to write the results")
+    parser.add_argument('--output-file', type=str, required=True, help="Output TSV file to write the results")
     parser.add_argument('--model', type=str, required=False, help="Model name to use for text generation, the HugginFace model hub name. Defaults to 'meta-llama/Meta-Llama-3.1-8B'", default="meta-llama/Meta-Llama-3.1-8B")
+    parser.add_argument('--top-k', type=int, required=False, help="How many top probable tokens to consider", default=10)
+    parser.add_argument('--max-length', type=int, required=False, help="What is the max length of the result", default=400)
+    parser.add_argument('--num-return-seq', type=int, required=False, help="How many independently generated sequences should be returned", default=1)
+    parser.add_argument('--low-cpu-mem', action='store_true', help="Sets the model argument low_cpu_mem_usage to True")
+    parser.add_argument('--dtype', type=str, required=False, help="For specifying the precision (or data types) of tensors. Recognized values now include float16, bfloat16, float32, float64", default="float16")
 
     args = parser.parse_args()
 
@@ -96,7 +118,7 @@ def main():
     check_gpu()
 
     # Generate text
-    results = generate_text(args.hf_token, args.model, args.prompt)
+    results = generate_text(args.token, args.model, args.prompt, args.top_k, args.max_length, args.num_return_seq, args.low_cpu_mem, args.dtype)
 
     # Write results to a TSV file
     write_to_tsv(args.output_file, results)
