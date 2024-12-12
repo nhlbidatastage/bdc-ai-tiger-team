@@ -34,4 +34,7 @@ RUN python3 -m pip install -U "itsdangerous<2.1.0"
 # this line must be added in order for python to be aware of transformers.
 RUN cd transformers && python3 setup.py develop
 
+# Hugging Face Accelerated Inference API for distributing across multiple GPUs/CPUs
+RUN pip3 install accelerate
+
 COPY scripts/run_model.py /
