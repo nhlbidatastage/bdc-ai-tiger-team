@@ -172,11 +172,14 @@ pip3 install langchain langchainhub langchain_community langchain-huggingface fa
 # install python depencies (if on NVIDA GPU-containing Linux machine)
 pip3 install langchain langchainhub langchain_community langchain-huggingface faiss-gpu transformers accelerate datasets
 ```
-Now we're going to work in the script:
+You'll need to get an API key for LangChain, more on this to follow.
+
+Now the script is still a work in progress, not all params are properly hooked up, but you can invoke the script as:
 
 ```bash
-python scripts/run_rag.py --token <your_hf_token> --prompt "I have tomatoes, basil and cheese at home. What can I cook for dinner?" --output-file output.tsv --model meta-llama/Meta-Llama-3.1-8B  --top-k 10 --max-length 600 --num-return-seq 1 --dtype float16
+python scripts/run_rag.py --lc-token <lc_token> --token <hf_token> --prompt "I have tomatoes, basil and cheese at home. What can I cook for dinner?" --output-file output.tsv --model meta-llama/Meta-Llama-3.1-8B  --top-k 10 --max-length 600 --num-return-seq 1 --dtype float16
 ```
 
+LEFT OFF WITH: clean up the parameters of the script, make it more configurable, confirm it can work with materials from NHLBI discovery page.
 
 

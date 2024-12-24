@@ -11,6 +11,15 @@ import argparse
 from langchain import hub
 from langchain_core.output_parsers import StrOutputParser
 from langchain_core.runnables import RunnablePassthrough
+import csv
+
+
+# Function to write the generated text to a TSV file
+def write_to_tsv(filename, results):
+    with open(filename, mode='w', newline='') as file:
+        tsv_writer = csv.writer(file, delimiter='\t')
+        for result in results:
+            tsv_writer.writerow([result])
 
 # Function to check GPU and CUDA status
 # CUDA is a parallel computing platform and application programming interface model created by Nvidia
@@ -30,7 +39,7 @@ def check_gpu():
     #print("Local Devices: ", device_lib.list_local_devices())
 
 # Function to generate text using the provided model and prompt
-def do_rag(hf_token, model_name, text_prompt, top_k, max_length, num_return_seq, low_cpu_mem, dtype):
+def do_rag(hf_token, lc_token, model_name, text_prompt, top_k, max_length, num_return_seq, low_cpu_mem, dtype):
     # Login to Hugging Face
     login(hf_token)
 
@@ -42,9 +51,11 @@ def do_rag(hf_token, model_name, text_prompt, top_k, max_length, num_return_seq,
     loader_doctor = HuggingFaceDatasetLoader(dataset_name,"Doctor")
 
     # Load the data
+    print("Loading data...")
     doctor_data = loader_doctor.load()
 
-    # Select the first 1000 entries
+    # Select the first 100 entries
+    # here's where I can reduce down... need to param this
     doctor_data = doctor_data[:1000]
 
     print(doctor_data[:2])
@@ -58,6 +69,7 @@ def do_rag(hf_token, model_name, text_prompt, top_k, max_length, num_return_seq,
     # Create a dictionary with encoding options
     encode_kwargs = {'normalize_embeddings': False}
 
+    print("Initialize an instance of HuggingFaceEmbeddings with the specified parameters...")
     # Initialize an instance of HuggingFaceEmbeddings with the specified parameters
     embeddings = HuggingFaceEmbeddings(
         model_name=modelPath,     
@@ -68,19 +80,27 @@ def do_rag(hf_token, model_name, text_prompt, top_k, max_length, num_return_seq,
     query_result = embeddings.embed_query(text)
     print(query_result[:3])
 
+    print("Create an instance of FAISS...")
     vector_db = FAISS.from_documents(doctor_data, embeddings)
     vector_db.save_local("faiss_doctor_index")
+
+    print("Perform a similarity search with the question...")
     question = "Hi Doctor, I have a headache, help me."
-    searchDocs = vector_db.similarity_search(question)
+    top_k = 30
+    searchDocs = vector_db.similarity_search(question, top_k)
     print(searchDocs[0].page_content)
 
+    print("Create a retriever instance...")
     retriever = vector_db.as_retriever()
     #base_model = "/kaggle/input/llama-3/transformers/8b-chat-hf/1"
     #base_model = "meta-llama/llama-3-8b-chat-hf"
-    base_model = "meta-llama/Meta-Llama-3.1-8B"
+    #base_model = "meta-llama/Meta-Llama-3.1-8B"
+    base_model = "meta-llama/Llama-3.2-1B-Instruct"
 
+    print("Initialize the model and tokenizer...")
     tokenizer = AutoTokenizer.from_pretrained(base_model)
 
+    print("Load the model...")
     model = AutoModelForCausalLM.from_pretrained(
             base_model,
             return_dict=True,
@@ -90,6 +110,7 @@ def do_rag(hf_token, model_name, text_prompt, top_k, max_length, num_return_seq,
             trust_remote_code=True,
     )
 
+    print("Initialize the text generation pipeline...")
     pipe = pipeline(
         "text-generation", 
         model=model, 
@@ -97,10 +118,14 @@ def do_rag(hf_token, model_name, text_prompt, top_k, max_length, num_return_seq,
         max_new_tokens=120
     )
 
+    print("Create a pipeline instance...")
+    # llm = OpenAI(api_key=openai_api_key, model="gpt-4")
     llm = HuggingFacePipeline(pipeline=pipe)
 
+    print("Create a retriever instance...")
     rag_prompt = hub.pull("rlm/rag-prompt")
 
+    print("Create a QA chain...")
     qa_chain = (
         {"context": retriever, "question": RunnablePassthrough()}
         | rag_prompt
@@ -108,18 +133,24 @@ def do_rag(hf_token, model_name, text_prompt, top_k, max_length, num_return_seq,
         | StrOutputParser()
     )
 
-    # left off here: LangSmithMissingAPIKeyWarning: API key must be provided when using hosted LangSmith API
-
+    print("Preparing question for the QA chain...")
     question = "Hi Doctor, I have a headache, help me."
-    result = qa_chain.invoke(question)
-    print(result.split("Answer: ")[1])
+    print("Question: "+question)
 
-    return(result.split("Answer: ")[1])
+    print("Invoke the QA chain...")
+    result = qa_chain.invoke(question)
+    print(result)
+
+    print("Return the answer...")
+    print(result.split("Answer: ")[1])
+    return(result.split("Answer: "))
+
 
 # Main function to handle arguments
 def main():
     parser = argparse.ArgumentParser(description="Generate text using RAG with the Meta-Llama model")
     parser.add_argument('--token', type=str, required=True, help="Hugging Face API token")
+    parser.add_argument('--lc-token', type=str, required=True, help="LangChain API token")
     parser.add_argument('--prompt', type=str, required=True, help="Text prompt to feed to the model")
     parser.add_argument('--output-file', type=str, required=True, help="Output TSV file to write the results")
     parser.add_argument('--model', type=str, required=False, help="Model name to use for text generation, the HugginFace model hub name. Defaults to 'meta-llama/Meta-Llama-3.1-8B'", default="meta-llama/Meta-Llama-3.1-8B")
@@ -135,10 +166,10 @@ def main():
     check_gpu()
 
     # Generate text
-    results = do_rag(args.token, args.model, args.prompt, args.top_k, args.max_length, args.num_return_seq, args.low_cpu_mem, args.dtype)
+    results = do_rag(args.token, args.lc_token, args.model, args.prompt, args.top_k, args.max_length, args.num_return_seq, args.low_cpu_mem, args.dtype)
 
     # Write results to a TSV file
-    #write_to_tsv(args.output_file, results)
+    write_to_tsv(args.output_file, results)
 
 if __name__ == "__main__":
     main()
