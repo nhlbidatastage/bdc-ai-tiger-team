@@ -52,6 +52,7 @@ Once we had a working hello world above we:
 Build from the `objective_1.1` directory (you can drop `--no-cache` if you're building this frequently):
 
 ```bash
+cd objective_1.1
 docker build --no-cache -t bdc-ai-tiger-team -f docker/Dockerfile . 
 ```
 
@@ -83,7 +84,7 @@ conda create -n llama-testing python=3.10 -y
 # activate it
 conda activate llama-testing
 # install python dependencies 
-pip3 install torch torchvision torchaudio; pip3 install transformers; pip3 install tensorflow; pip3 install accelerate
+pip3 install torch torchvision torchaudio transformers tensorflow accelerate
 # now run the script, this should automatically use the M2 GPU cores (you can see this in Activity Monitor)
 python scripts/run_model.py --token <your_hf_token> --prompt "I have tomatoes, basil and cheese at home. What can I cook for dinner?" --output-file output.tsv --model meta-llama/Meta-Llama-3.1-8B  --top-k 10 --max-length 600 --num-return-seq 1 --dtype float16
 ```
@@ -149,8 +150,33 @@ The job ran and the output wasn't the best I've seen.  This run used a v100 w/ 2
 * need to confirm the WDL works on Terra (and CWL continues to work on SBG) -- in progress now
 
 
-## Experiment 4
+## Experiment 4 - Fine-Tuning and RAG
 
-Tuning of the model based on “Discovery page” content in BDC.  We’ll use this [tutorial](https://www.datacamp.com/tutorial/llama3-fine-tuning-locally) as a jumping off point.  More to come on this.
+The next step is to explore Fine-Tuning and RAG as approaches that will allow us to leverage NHLBI context with the Llama3 model.
+
+We’ll use the following tutorials as jumping off points:
+
+* [RAG Tutorial](https://www.datacamp.com/tutorial/rag-vs-fine-tuning)
+* [Fine-tuning Tutorial](https://www.datacamp.com/tutorial/llama3-fine-tuning-locally)
+
+### RAG
+
+This approach is going to be less-intensive than fine-tuning.  To start with install the dependencies:
+
+```bash
+cd bdc-ai-tiger-team/objective_1.1
+# activate the previous conda enviornment 
+conda activate llama-testing
+# install python dependencies (if on Mac)
+pip3 install langchain langchainhub langchain_community langchain-huggingface faiss-cpu transformers accelerate datasets tf-keras
+# install python depencies (if on NVIDA GPU-containing Linux machine)
+pip3 install langchain langchainhub langchain_community langchain-huggingface faiss-gpu transformers accelerate datasets
+```
+Now we're going to work in the script:
+
+```bash
+python scripts/run_rag.py --token <your_hf_token> --prompt "I have tomatoes, basil and cheese at home. What can I cook for dinner?" --output-file output.tsv --model meta-llama/Meta-Llama-3.1-8B  --top-k 10 --max-length 600 --num-return-seq 1 --dtype float16
+```
+
 
 
