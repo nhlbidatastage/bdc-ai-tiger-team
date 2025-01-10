@@ -56,7 +56,7 @@ You’ll see the configuration screen (illustrated in the figure below); make su
 
 ## Uploading and Editing the Notebook
 
-Download the notebook ['20241021 Llama3.ipynb']() from this repository, and upload it into your Terra Workspace using the Browse Workspace Files section of the Analsysis tab.  Once uyou upload the file, click on Analsyis again and open the notebook (Edit...) in the newly create Analysis Environment.
+Download the notebook ['20241021 Llama3.ipynb'](https://github.com/nhlbidatastage/bdc-ai-tiger-team/blob/main/objective_1.1/notebooks/20241021%20Llama3.ipynb) from this repository, and upload it into your Terra Workspace using the Browse Workspace Files section of the Analsysis tab.  Once uyou upload the file, click on Analsyis again and open the notebook (Edit...) in the newly create Analysis Environment.
 
 <img src="./terra_3.png" alt="Diagram" title="Upload the notebook" width="900">
 
