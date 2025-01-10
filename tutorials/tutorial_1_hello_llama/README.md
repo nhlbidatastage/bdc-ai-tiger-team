@@ -50,7 +50,7 @@ Once you’ve created a workspace (as shown in the Figure 4), navigate to the "A
 
 You’ll see the configuration screen (illustrated in the figure below); make sure to use the same settings specified here to proceed smoothly with the tutorial.
 
-<img src="./env_2.png" alt="Diagram" title="Process Flow Diagram" width="900">
+<img src="./env_2.png" alt="Diagram" title="Process Flow Diagram" width="500">
 
 **Figure 5** Settings for the Jupyter environment
 
