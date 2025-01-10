@@ -23,14 +23,14 @@ Jupyter notebooks provide an interactive coding environment that combines code, 
 
 To get started with Llama3, you will first need to create an account on [HuggingFace](https://huggingface.co), a platform for accessing and managing machine learning models. You just need an email address, the account is free. Once your account is set up, generate a personal access token, which will serve as your authentication key for using Hugging Face's resources. In Figure 1 below you can see what my settings look like, look for "Access Tokens" on the left, click on the link, and create a new access token with at least READ permissions.  You will be asked to download the token, do so and keep this very safe!  It allows for programmatic access to HuggingFace so do not share it.  I use 1Password to store it securely, you should use a similar secrets manager to keep it safe. 
 
-<img src="./huggingface.png" alt="Diagram" title="Process Flow Diagram" width="900">
+<img src="./huggingface.png" alt="Diagram" title="Access Token section of the settings" width="900">
 
 **Figure 1** Access Token section of the settings
 
 Finally, apply for access to the Llama3 model through Hugging Face’s platform, as some models require additional permissions due to licensing or usage restrictions.  We're using the `meta-llama/Llama-3.1-8B` model distributed via HuggingFace.  Go to its 
 [repository](https://huggingface.co/meta-llama/Llama-3.1-8B) and click the button to apply for access to the model (Figure 2).   These steps ensure access to the Llama3 model for the next steps of the tutorial.  ***It can take 1-2 days to get access so plan accordingly.***
 
-<img src="./huggingface_access.png" alt="Diagram" title="Process Flow Diagram" width="900">
+<img src="./huggingface_access.png" alt="Diagram" title=" Login/signup and apply for access to this model, it can take 1-2 days to get access so plan accordingly" width="900">
 
 **Figure 2** Login/signup and apply for access to this model, it can take 1-2 days to get access so plan accordingly
 
@@ -38,19 +38,19 @@ Finally, apply for access to the Llama3 model through Hugging Face’s platform,
 
 Now that you have access to the Llama3 model, you’ll need to run our tutorial notebook in the BDC environment using the Terra workspace. At this point, we assume you’ve already gone through the extensive online documentation for BioData Catalyst (BDC) to establish a Terra account, set up billing information, and apply for cloud credits. If you haven’t completed these steps, please review the BDC documentation [here](https://bdcatalyst.gitbook.io/biodata-catalyst-documentation). To continue with this tutorial, you’ll need the ability to create a new Terra workspace and launch a Jupyter notebook environment. Start by logging in to BDC powered by Terra at this [link](https://terra.biodatacatalyst.nhlbi.nih.gov) and creating a new workspace using the plus button. Ensure you have a valid billing project; if you’ve received cloud credits, use the billing project associated with those credits. 
 
-<img src="./terra_1.png" alt="Diagram" title="Process Flow Diagram" width="900">
+<img src="./terra_1.png" alt="Diagram" title="Create a new Terra workspace to work in" width="900">
 
 **Figure 3** Create a new Terra workspace to work in
 
 Once you’ve created a workspace (as shown in the Figure 4), navigate to the "Analysis" tab, click the cloud with the lightning bolt icon, and then select the settings icon for Jupyter. 
 
-<img src="./terra_2.png" alt="Diagram" title="Process Flow Diagram" width="900">
+<img src="./terra_2.png" alt="Diagram" title="Click the cloud icon under the Analysis tab" width="900">
 
 **Figure 4** Click the cloud icon under the Analysis tab
 
 You’ll see the configuration screen (illustrated in the figure below); make sure to use the same settings specified here to proceed smoothly with the tutorial.
 
-<img src="./env_2.png" alt="Diagram" title="Process Flow Diagram" width="500">
+<img src="./env_2.png" alt="Diagram" title="Settings for the Jupyter environment" width="500">
 
 **Figure 5** Settings for the Jupyter environment
 
@@ -58,13 +58,13 @@ You’ll see the configuration screen (illustrated in the figure below); make su
 
 Download the notebook ['20241021 Llama3.ipynb']() from this repository, and upload it into your Terra Workspace using the Browse Workspace Files section of the Analsysis tab.  Once uyou upload the file, click on Analsyis again and open the notebook (Edit...) in the newly create Analysis Environment.
 
-<img src="./terra_3.png" alt="Diagram" title="Process Flow Diagram" width="900">
+<img src="./terra_3.png" alt="Diagram" title="Upload the notebook" width="900">
 
 **Figure 6** Upload the notebook
 
 At this point you should now see the Llama3 "Hello World" notebook as in Figure 7.
 
-<img src="./terra_4.png" alt="Diagram" title="Process Flow Diagram" width="900">
+<img src="./terra_4.png" alt="Diagram" title="The open notebook ready for execution" width="900">
 
 **Figure 7** The open notebook ready for execution
 
